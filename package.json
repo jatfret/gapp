@@ -1,11 +1,22 @@
 {
-  "name": "gapp",
+  "name": "swa",
   "version": "0.0.1",
-  "description": "",
+  "description": "A scraffolding tool for web appplication",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "jatfret",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jatfret/swa.git"
+  },
+  "keywords": [
+    "scraffolding"
+  ],
+  "bugs": {
+    "url": "https://github.com/jatfret/swa/issues"
+  },
+  "homepage": "https://github.com/jatfret/swa#readme"
 }

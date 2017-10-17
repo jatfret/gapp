@@ -1,5 +1,5 @@
 {
-  "name": "swa",
+  "name": "kiweb",
   "version": "0.0.1",
   "description": "A scraffolding tool for web appplication",
   "main": "index.js",
@@ -10,13 +10,13 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jatfret/swa.git"
+    "url": "git+https://github.com/jatfret/kiweb.git"
   },
   "keywords": [
     "scraffolding"
   ],
   "bugs": {
-    "url": "https://github.com/jatfret/swa/issues"
+    "url": "https://github.com/jatfret/kiweb/issues"
   },
-  "homepage": "https://github.com/jatfret/swa#readme"
+  "homepage": "https://github.com/jatfret/kiweb#readme"
 }

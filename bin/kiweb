@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+
+const pkg = require('../package.json')
+const program = require('commander')
+const chalk = require('chalk')
+
+program
+  .version(pkg.version)
+  .usage('<command> [options]')
+  .command('init <project-name>', 'generate a new project from templates')
+  .parse(process.argv)
+
+
+
+
+
+
+
+
+
+

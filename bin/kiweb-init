@@ -1,0 +1,84 @@
+#!/usr/bin/env node
+
+const program = require("commander")
+const chalk = require("chalk")
+const inquirer = require("inquirer")
+const fse = require("fs-extra")
+const path = require("path")
+const { execSync } = require("child_process")
+
+program.usage('<project-name>')
+
+program
+  .on('--help', () => {
+    console.log()
+    console.log('  examples:')
+    console.log(chalk.gray('    #creatre a new project with providing templates'))
+    console.log(chalk.green('    $ kiweb init projectName'))
+  })
+  .parse(process.argv)
+
+function help(){
+  if(!program.args.length){ 
+    return program.help()
+  }
+}
+
+help()
+
+const projectName = program.args[0]
+validateProjectName(projectName)
+
+inquirer.prompt([{
+  type: 'list',
+  name: 'template',
+  choices: ['webpack', 'webpack + vue', 'webpack + react', 'gulp'],
+  message: 'please select your project template：'
+}]).then((answer)=>{
+  if(answer.template){
+    template = answer.template
+    copyTemplate()
+  }
+})
+
+
+function validateProjectName(projectName){
+  if(fse.existsSync(projectName)){
+    inquirer.prompt([{
+      type: 'confirm',
+      name: 'isContinue',
+      message: 'the projectName is already existed, do you want to rewrite?',
+    }]).then((answer)=>{
+      if(!answer.isContinue){
+        console.error(chalk.red('Initialize interrupt'))
+        process.exit(1)
+      }  
+    })
+  }
+}
+
+function copyTemplate(){
+  const templateDir = getTemplateDir()   
+  try {
+    fse.copySync(templateDir, path.join(process.cwd(), projectName))
+    console.log('success!')
+  }catch(err) {
+    console.error(err)
+  } 
+}
+
+function getTemplateDir(){
+  let root
+  try{
+    root = execSync('npm root -g').toString().trim()
+  }catch(err){
+    console.log(err)
+  }
+  if(root){
+    return path.join(root, './kiweb/templates')
+  }
+}
+process.on('exit', ()=>{
+  console.log("process exit")
+})
+

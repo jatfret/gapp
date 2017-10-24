@@ -1,1 +1,1 @@
-## A scraffolding tool for web application
+A scraffolding tool for web application

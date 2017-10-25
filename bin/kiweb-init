@@ -19,28 +19,48 @@ program
   .parse(process.argv)
 
 function help(){
-  if(!program.args.length){ 
+  if(!program.args.length){
     return program.help()
   }
 }
 
 help()
 
+const prompts = [{
+  type: 'list',
+  name: 'buildTool',
+  message: 'please select your project build tool：',
+  choices: [{
+    name: 'webpack',
+    value: 'webpack',
+    checked: true
+  }, {
+    name: 'gulp',
+    value: 'gulp',
+    checked: false
+  }]
+}, {
+  type: 'list',
+  name: 'framework',
+  message: 'please select your font-end develop framework',
+  choices: [{
+    name: 'react',
+    value: 'react'
+  }, {
+    name: 'vue',
+    value: 'vue'
+  }, {
+    name: 'none',
+    value: 'none'
+  }]
+},{
+  type: 'confirm',
+  name: 'isSPA',
+  message: 'Is your webapp a single-page application ?'
+}]
+
 const projectName = program.args[0]
 validateProjectName(projectName)
-
-inquirer.prompt([{
-  type: 'list',
-  name: 'template',
-  choices: ['webpack', 'webpack + vue', 'webpack + react', 'gulp'],
-  message: 'please select your project template：'
-}]).then((answer)=>{
-  if(answer.template){
-    template = answer.template
-    copyTemplate()
-  }
-})
-
 
 function validateProjectName(projectName){
   if(fse.existsSync(projectName)){
@@ -49,22 +69,54 @@ function validateProjectName(projectName){
       name: 'isContinue',
       message: 'the projectName is already existed, do you want to rewrite?',
     }]).then((answer)=>{
-      if(!answer.isContinue){
+      if(answer.isContinue){
+        fse.removeSync(projectName)
+        generateProject()
+      }else{
         console.error(chalk.red('Initialize interrupt'))
         process.exit(1)
-      }  
+      }
     })
+  }else{
+    generateProject()
   }
 }
 
-function copyTemplate(){
-  const templateDir = getTemplateDir()   
+function generateProject(){
+  inquirer.prompt(prompts).then(answer => {
+    const templateName = getTemplateName(answer)
+    const templateDir = path.join(getTemplateDir(), templateName)
+    const projectDir = path.join(process.cwd(), projectName)
+    copyTemplate(templateDir, projectDir)
+  })
+}
+
+function copyTemplate(templateDir, projectDir){
   try {
-    fse.copySync(templateDir, path.join(process.cwd(), projectName))
-    console.log('success!')
+    console.log(chalk.gray('The project is generating, wait please...'))
+    fse.copySync(templateDir, projectDir)
+    const packageJsonPath = path.join(projectDir, 'package.json')
+    if(fse.existsSync(path.join(packageJsonPath))){
+      let packageJson = require(packageJsonPath)
+      packageJson.name = projectName
+      fse.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2))
+    }
+    console.log(chalk.green('The project was initialized successfully!'))
   }catch(err) {
     console.error(err)
-  } 
+  }
+}
+
+function getTemplateName(answer){
+  const nameArr = []
+  nameArr.push(answer.buildTool)
+  if(answer.framework !== 'none'){
+    nameArr.push(answer.framework)
+  }
+  if(answer.isSPA){
+    nameArr.push("spa")
+  }
+  return nameArr.join("-")
 }
 
 function getTemplateDir(){
@@ -79,6 +131,5 @@ function getTemplateDir(){
   }
 }
 process.on('exit', ()=>{
-  console.log("process exit")
+  //console.log("process exit")
 })
-

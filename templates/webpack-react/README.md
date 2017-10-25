@@ -1,0 +1,1 @@
+# webpack + react + multiple entries
